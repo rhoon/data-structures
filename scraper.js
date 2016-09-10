@@ -10,6 +10,34 @@ $('td').each(function(i, elem) {
         var a = $(elem).contents().filter(function() {
                     return this.nodeType == 3;
                 }).text();
-        console.log(a);
+                
+        findJunk(a);
     }
 })
+
+function findJunk(address) {
+    var cutStart;
+    var cutEnd;
+    
+    //locate the parentheses
+    for (var i=0; i<address.length; i++) {
+        if (address[i] == '(') {
+            cutStart = i;
+        } else if (address[i] == ')') {
+            cutEnd = i;
+        }
+    }
+    
+    //cut 'em on outta there
+    if (cutStart != undefined && cutEnd != undefined) {
+        cut(address, cutStart, cutEnd);
+    } else {
+        console.log(address);
+    }
+    
+}
+
+//thanks, stack overflow
+function cut(str, cutStart, cutEnd){
+  console.log(str.substr(0,cutStart) + str.substr(cutEnd+1));
+}
