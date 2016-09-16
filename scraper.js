@@ -1,17 +1,22 @@
 var fs = require('fs');
 var cheerio = require('cheerio');
-
 var content = fs.readFileSync('data/data-01.txt');
-
 var $ = cheerio.load(content);
 
-var addresses = [];
+var request = require('request');
+var async = require('async'); 
 
+var apiKey = process.env['GMAKEY'];
+
+console.log(apiKey);
+
+var addresses = [];
 var nyc = ", New York, NY";
 
+var meetingsData = [];
+
 $('tbody').find('tr').each(function(i, elem) {
-     addresses
-        .push($(elem)
+     addresses.push($(elem)
         .find('td')
         .eq(0).html().split('<br>')[2]
         .split(',')[0].trim()
@@ -20,40 +25,17 @@ $('tbody').find('tr').each(function(i, elem) {
 
 console.log(addresses);
 
-
-// $('td').each(function(i, elem) {
-//     if ($(elem).css("border-bottom") == "1px solid #e3e3e3" && $(elem).css("width") == "260px") {
-//         var a = $(elem).contents().filter(function() {
-//                     return this.nodeType == 3;
-//                 }).text();
-                
-//         console.log(a);
-//     }
-// })
-
-// function findJunk(address) {
-//     var cutStart;
-//     var cutEnd;
-    
-//     //locate the parentheses
-//     for (var i=0; i<address.length; i++) {
-//         if (address[i] == '(') {
-//             cutStart = i;
-//         } else if (address[i] == ')') {
-//             cutEnd = i;
-//         }
-//     }
-    
-//     //cut 'em on outta there
-//     if (cutStart != undefined && cutEnd != undefined) {
-//         cut(address, cutStart, cutEnd);
-//     } else {
-//         console.log(address);
-//     }
-    
-// }
-
-//thanks, stack overflow
-function cut(str, cutStart, cutEnd){
-  console.log(str.substr(0,cutStart) + str.substr(cutEnd+1));
-}
+async.eachSeries(addresses, function(value, callback) {
+    var apiRequest = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + value.split(' ').join('+') + '&key=' + apiKey;
+    var thisMeeting = new Object;
+    thisMeeting.address = value;
+    request(apiRequest, function(err, resp, body) {
+        if (err) {throw err;}
+        console.log('Im running');
+        thisMeeting.latLong = JSON.parse(body).results[0].geometry.location;
+        meetingsData.push(thisMeeting);
+    });
+    setTimeout(callback, 1000);
+}, function() {
+    console.log(meetingsData);
+});
