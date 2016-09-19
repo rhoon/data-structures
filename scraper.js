@@ -6,9 +6,7 @@ var $ = cheerio.load(content);
 var request = require('request');
 var async = require('async'); 
 
-var apiKey = process.env['GMAKEY'];
-
-console.log(apiKey);
+var apiKey = process.env.GMAKEY;
 
 var addresses = [];
 var nyc = ", New York, NY";
@@ -19,8 +17,11 @@ $('tbody').find('tr').each(function(i, elem) {
      addresses.push($(elem)
         .find('td')
         .eq(0).html().split('<br>')[2]
-        .split(',')[0].trim()
-        .concat(nyc).replace(/ /g, '+'));
+        .split(',')[0]
+        .split('(')[0]
+        .split('-')[0]
+        .trim()
+        .concat(nyc)); //.replace(/ /g, '+'));
     })
 
 console.log(addresses);
@@ -36,6 +37,12 @@ async.eachSeries(addresses, function(value, callback) {
         meetingsData.push(thisMeeting);
     });
     setTimeout(callback, 1000);
+    
 }, function() {
     console.log(meetingsData);
+    fs.writeFile('addresses.txt', JSON.stringify(meetingsData), function(err) {
+        if (err) {throw err;}
+        console.log("done");
+    });
 });
+
