@@ -14,3 +14,9 @@ Uses Cheerio/Jquery selectors to sort through
 see -> scraper.js
 
 ___
+
+#Assignment 3
+Update of Scraper.js, uses Google Maps API to locate addresses and writes a txt file with the lat / long JSON objects
+
+see -> scraper.js
+    -> addresses.txt
