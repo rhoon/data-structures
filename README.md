@@ -20,3 +20,13 @@ Update of Scraper.js, uses Google Maps API to locate addresses and writes a txt 
 
 see -> scraper.js
     -> addresses.txt
+    
+___
+
+#Assignment 4
+Adds the lat / long data and addresses to a MongoDB collection
+
+'''> db.bymeet.find().count()
+1870'''
+
+see -> assign4.js
