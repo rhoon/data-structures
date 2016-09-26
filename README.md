@@ -26,7 +26,7 @@ ___
 #Assignment 4
 Adds the lat / long data and addresses to a MongoDB collection
 
-'''> db.bymeet.find().count()
-1870'''
+***> db.bymeet.find().count() <br />
+1870***
 
 see -> assign4.js
