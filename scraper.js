@@ -7,7 +7,6 @@ var async = require('async');
 
 var apiKey = process.env.GMAKEY;
 
-var addresses = [];
 var nyc = ", New York, NY";
 
 var meetings = [];
@@ -32,8 +31,10 @@ function scrape(content) {
     
     $('tbody').find('tr').each(function(i, elem) {
         
+        //make the meeting (SINGULAR) object 
+         var meeting = new Object;
         
-         var address = ($(elem)
+         meeting.address = ($(elem)
             .find('td')
             .eq(0).html().split('<br>')[2]
             .split(',')[0]
@@ -54,46 +55,45 @@ function scrape(content) {
             .split('<br>'); 
             
         meets = meets.filter(function(n) {  return n != ''; }); // removes array values containing only white space
-
+        // console.log(meets);
+        
         for (var i = 0; i<meets.length; i++) {
-            
+
             //assign day and time
             if (meets[i] != undefined) {
-                var day = meets[i].split('From')[0].replace(/(<([^>]+)>)/ig,'').trim();
-                console.log('day: ' + day);
-                var time = meets[i].split('From')[1];
-                if (time != undefined) time = time.replace(/(<([^>]+)>)/ig,'').trim();
-                console.log('time: ' + time);
+                meeting.day = meets[i].split('From')[0].replace(/(<([^>]+)>)/ig,'').trim();
+                // console.log('day: ' + meeting.day);
+                meeting.time = meets[i].split('From')[1];
+                if (meeting.time != undefined) meeting.time = meeting.time.replace(/(<([^>]+)>)/ig,'').trim();
             }
             
             //assign meeting type
-            var type = meets[i+1];
-            if (type != undefined) {
-                type = type.replace(/(<([^>]+)>)/ig,'').trim();
+            meeting.type = meets[i+1];
+            if (meeting.type != undefined) {
+                meeting.type = meeting.type.replace(/(<([^>]+)>)/ig,'').trim();
             }
             
-            //assign special interest
-            var special = meets[i+2]
+            //assign special interest, but only if there is one
+            var special = meets[i+2];
             if (special != undefined) {
                 if (special.indexOf('Special Interest') != -1) {
-                    special = special.replace(/(<([^>]+)>)/ig,'').trim();
+                    meeting.special = special.replace(/(<([^>]+)>)/ig,'').trim();
                     i += 1;
                 }
             }
+            console.log(meeting);
             i += 1;
-            
-            // meetings.push({address, day, time, type, special});
+            // add meeting object to array -- meetings array is only pushed a single value
+            meetings.push(meeting);
         }
-        // console.log(meetings[0]);
-        
     })
-        
 }
 
+// run input, which calls the scraper.
 input();
-//console.log(addresses);
+// console.log(meetings);  
 
-// async.eachSeries(addresses, function(value, callback) {
+// async.eachSeries(meetings, function(value, callback) {
     
 //     var apiRequest = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + value.split(' ').join('+') + '&key=' + apiKey;
 //     var thisMeeting = new Object;
