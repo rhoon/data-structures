@@ -34,6 +34,7 @@ function scrape(content) {
         //make the meeting (SINGULAR) object 
          var meeting = new Object;
         
+        //assign the address
          meeting.address = ($(elem)
             .find('td')
             .eq(0).html().split('<br>')[2]
@@ -47,14 +48,16 @@ function scrape(content) {
             .split('&amp;')[0]
             .trim()
             .concat(nyc)); //.replace(/ /g, '+'));
-            
+        
+        //parse second td for multiple meetings
         var meets = $(elem).find('td').eq(1)
             .html()
             .replace(/>\s+</g, "><") //reg ex removes white space (SO) 
             .trim()
             .split('<br>'); 
-            
-        meets = meets.filter(function(n) {  return n != ''; }); // removes array values containing only white space
+        
+        // removes array values containing only white space
+        meets = meets.filter(function(n) {  return n != ''; }); 
         // console.log(meets);
         
         for (var i = 0; i<meets.length; i++) {
@@ -81,10 +84,9 @@ function scrape(content) {
                     i += 1;
                 }
             }
-            console.log(meeting);
             i += 1;
             // add meeting object to array -- meetings array is only pushed a single value
-            meetings.push(meeting);
+            console.log(meeting);
         }
     })
 }

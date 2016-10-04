@@ -30,3 +30,31 @@ Adds the lat / long data and addresses to a MongoDB collection
 1870***
 
 see -> assign4.js
+
+___
+
+#Assignment 5
+Objects are not writing to array correctly. Console.log returns:
+```{ address: '715 West 179th Street, New York, NY',
+  day: 'Tuesdays',
+  time: '7:30 PM to 8:30 PM',
+  type: 'Meeting Type O = Open meeting' }
+{ address: '189th Street, New York, NY',
+  day: 'Thursdays',
+  time: '7:30 PM to 8:30 PM',
+  type: 'Meeting Type C = Closed Discussion meeting' }
+{ address: '178 Bennett Avenue, New York, NY',
+  day: 'Sundays',
+  time: '6:00 PM to 7:00 PM',
+  type: 'Meeting Type C = Closed Discussion meeting' }
+{ address: '178 Bennett Avenue, New York, NY',
+  day: 'Mondays',
+  time: '7:30 PM to 8:30 PM',
+  type: 'Meeting Type BB = Big Book meeting' }```
+  
+But in the array to store these, they appear reshuffled or all as the same
+
+***> db.bymeet.find().count() <br />
+1870***
+
+see -> assign4.js
