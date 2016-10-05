@@ -54,7 +54,6 @@ Objects are not writing to array correctly. Console.log returns:
   
 But in the array to store these, they appear reshuffled or all as the same
 
-***> db.bymeet.find().count() <br />
-1870***
+<br />
 
-see -> assign4.js
+see -> scraper.js
