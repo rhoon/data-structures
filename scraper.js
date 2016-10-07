@@ -73,20 +73,20 @@ function scrape(content) {
             //assign meeting type
             meeting.type = meets[i+1];
             if (meeting.type != undefined) {
-                meeting.type = meeting.type.replace(/(<([^>]+)>)/ig,'').trim();
+                meeting.type = meeting.type.replace(/(<([^>]+)>)/ig,'').trim().split('= ')[1];
             }
             
             //assign special interest, but only if there is one
             var special = meets[i+2];
             if (special != undefined) {
                 if (special.indexOf('Special Interest') != -1) {
-                    meeting.special = special.replace(/(<([^>]+)>)/ig,'').trim();
+                    meeting.special = special.replace(/(<([^>]+)>)/ig,'').trim().replace('Special Interest ', '');
                     i += 1;
                 }
             }
             i += 1;
             // add meeting object to array -- meetings array is only pushed a single value
-            console.log(meeting);
+            meetings.push(meeting);
         }
     })
 }
@@ -95,24 +95,25 @@ function scrape(content) {
 input();
 // console.log(meetings);  
 
-// async.eachSeries(meetings, function(value, callback) {
+async.eachSeries(meetings, function(item, callback) {
     
-//     var apiRequest = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + value.split(' ').join('+') + '&key=' + apiKey;
-//     var thisMeeting = new Object;
-//     thisMeeting.address = value;
-//     request(apiRequest, function(err, resp, body) {
-//         if (err) {throw err;}
-//         console.log('Im running');
-//         thisMeeting.latLong = JSON.parse(body).results[0].geometry.location;
-//         meetingsData.push(thisMeeting);
-//     });
-//     setTimeout(callback, 1000);
+    var apiRequest = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + item.address.split(' ').join('+') + '&key=' + apiKey;
+    var thisMeeting = new Object;
+    thisMeeting.address = item.address;  //so this is declaring a new object. can it work with the old object, meetings?
+    console.log(thisMeeting.address);
+    request(apiRequest, function(err, resp, body) {  
+        if (err) {throw err;} 
+        console.log('Im running');
+        thisMeeting.latLong = JSON.parse(body).results[0].geometry.location;  //
+        meetingsData.push(thisMeeting);
+    });
+    setTimeout(callback, 250);
     
-// }, function() {
-//     console.log(meetingsData);
-//     fs.writeFile('addresses.txt', JSON.stringify(meetingsData), function(err) {
-//         if (err) {throw err;}
-//         console.log("done");
-//     });
-// });
+}, function() {
+    console.log(meetingsData);
+    fs.writeFile('addresses.txt', JSON.stringify(meetingsData), function(err) {
+        if (err) {throw err;}
+        console.log("done");
+    });
+});
 
