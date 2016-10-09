@@ -114,20 +114,18 @@ function scrape(content) {
 
 // run input, which calls the scraper.
 input();
-console.log(meetings);  
+// console.log(meetings);  
 
 async.eachSeries(meetings, function(item, callback) {
     
     var apiRequest = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + item.address.split(' ').join('+') + '&key=' + apiKey;
-    // var thisMeeting = new Object;
-    // thisMeeting.address = item.address;  //so this is declaring a new object. can it work with the old object, meetings?
-    
+
     request(apiRequest, function(err, resp, body) {  
         if (err) {throw err;} 
-        item.latLong = JSON.parse(body).results[0].geometry.location;  
-        console.log(item);
-        
-        // meetings.push(thisMeeting);
+        // write the lat and lng to key / value pairs on meetings object
+        item.lat = JSON.parse(body).results[0].geometry.location.lat;
+        item.lng = JSON.parse(body).results[0].geometry.location.lng; 
+        // console.log(item);
     });
     setTimeout(callback, 250);
     
