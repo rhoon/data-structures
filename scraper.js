@@ -11,7 +11,30 @@ var nyc = ", New York, NY";
 
 var meetings = [];
 
-var meetingsData = [];
+// var meetingsData = [];
+
+function weekdayToNum(weekday) {
+    
+    
+}
+
+// takes string formatted in 12:00 AM / PM and makes it into a miltary time
+function militaryTime(time) {
+    
+    var hours = time.split(' ')[0].split(':')[0];
+    hours = +hours;
+    var minutes = time.split(' ')[0].split(':')[1];
+    var PM = time.split(' ')[1].toUpperCase();
+    console.log(PM);
+    if (PM == 'PM') {
+        hours = hours+12;
+    } else if (hours == 12) { 
+        hours = 0; 
+    }
+    
+    console.log(hours + minutes);
+    
+}
 
 function input() {
     for (var i=1; i<=10; i++) {
@@ -66,8 +89,12 @@ function scrape(content) {
             if (meets[i] != undefined) {
                 meeting.day = meets[i].split('From')[0].replace(/(<([^>]+)>)/ig,'').trim();
                 // console.log('day: ' + meeting.day);
-                meeting.time = meets[i].split('From')[1];
-                if (meeting.time != undefined) meeting.time = meeting.time.replace(/(<([^>]+)>)/ig,'').trim();
+                var time = meets[i].split('From')[1];
+                if (time != undefined) {
+                    meeting.start = time.split('to')[0].replace(/(<([^>]+)>)/ig,'').trim();
+                    meeting.end = time.split('to')[1].replace(/(<([^>]+)>)/ig,'').trim();
+                };
+                
             }
             
             //assign meeting type
@@ -95,25 +122,26 @@ function scrape(content) {
 input();
 // console.log(meetings);  
 
-async.eachSeries(meetings, function(item, callback) {
+// async.eachSeries(meetings, function(item, callback) {
     
-    var apiRequest = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + item.address.split(' ').join('+') + '&key=' + apiKey;
-    var thisMeeting = new Object;
-    thisMeeting.address = item.address;  //so this is declaring a new object. can it work with the old object, meetings?
-    console.log(thisMeeting.address);
-    request(apiRequest, function(err, resp, body) {  
-        if (err) {throw err;} 
-        console.log('Im running');
-        thisMeeting.latLong = JSON.parse(body).results[0].geometry.location;  //
-        meetingsData.push(thisMeeting);
-    });
-    setTimeout(callback, 250);
+//     var apiRequest = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + item.address.split(' ').join('+') + '&key=' + apiKey;
+//     var thisMeeting = new Object;
+//     thisMeeting.address = item.address;  //so this is declaring a new object. can it work with the old object, meetings?
     
-}, function() {
-    console.log(meetingsData);
-    fs.writeFile('addresses.txt', JSON.stringify(meetingsData), function(err) {
-        if (err) {throw err;}
-        console.log("done");
-    });
-});
+//     request(apiRequest, function(err, resp, body) {  
+//         if (err) {throw err;} 
+//         console.log(thisMeeting.address);
+//         thisMeeting.latLong = JSON.parse(body).results[0].geometry.location;  
+//         console.log(item.latLong);
+//         meetings.push(thisMeeting);
+//     });
+//     setTimeout(callback, 250);
+    
+// }, function() {
+//     console.log(meetings);
+//     fs.writeFile('addresses.txt', JSON.stringify(meetings), function(err) {
+//         if (err) {throw err;}
+//         console.log("done");
+//     });
+// });
 
