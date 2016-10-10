@@ -67,3 +67,10 @@ Type "it" for more
 <br />
 
 see -> scraper.js, assign5.js
+
+___
+
+#Assignment 5
+Enhanced scraper now adds meeting titles with improved formatting
+
+see -> scraper.js

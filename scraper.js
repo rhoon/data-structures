@@ -42,6 +42,28 @@ function rmDups(array) {
     
 }
 
+// meeting.name scrubber
+function nameScrub(name) {
+    name = name.toUpperCase();
+    
+    var one = name.indexOf(':I');
+    var altOne = name.indexOf(':1');
+    var two = name.indexOf(':II');
+    var three = name.indexOf(':III');
+    
+    if (one != -1 || altOne != -1) {
+    	name = name.split('(')[0].trim() + ' 1';
+    } else if (two != -1) {
+        name = name.split('(')[0].trim() + ' 2';
+    } else if (three != -1) {
+        name = name.split('(')[0].trim() + ' 3';
+    }
+    
+    name = name.replace('&APOS;', '‘').replace('&AMP;', '&');
+
+    return name;
+}
+
 // loop through files
 function input() {
     for (var i=1; i<=10; i++) {
@@ -64,10 +86,19 @@ function scrape(content) {
         
         //make the meeting (SINGULAR) object 
          var meeting = new Object;
+         
+         //assign the name
+         meeting.name = nameScrub(($(elem).find('td')
+            .eq(0).html()
+            .split('<br>')[1])
+            .split('-')[0]
+            .replace(/(<([^>]+)>)/ig,'')
+            .trim());
+
+        // console.log(meeting.name);
         
         //assign the address
-         meeting.address = ($(elem)
-            .find('td')
+         meeting.address = ($(elem).find('td')
             .eq(0).html().split('<br>')[2]
             .split(',')[0]
             .split('(')[0]
