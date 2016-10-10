@@ -1,3 +1,5 @@
+var _ = require('lodash');
+
 var fs = require('fs');
 var cheerio = require('cheerio');
 var content;
@@ -10,8 +12,6 @@ var apiKey = process.env.GMAKEY;
 var nyc = ", New York, NY";
 
 var meetings = [];
-
-// var meetingsData = [];
 
 // takes string formatted in 12:00 AM / PM and makes it into a miltary time
 function militaryTime(time) {
@@ -26,10 +26,23 @@ function militaryTime(time) {
         hours = 0; 
     }
     
-    return hours + minutes;
+    return parseInt(hours + minutes);
     
 }
 
+// removes adjacent duplicates
+function rmDups(array) {
+    
+    for (var i=0; i<array.length; i++) {
+        if (_.isEqual(array[i], array[i+1])) {
+            array.splice(i,1);
+            i--;
+        } 
+    }
+    
+}
+
+// loop through files
 function input() {
     for (var i=1; i<=10; i++) {
         if (i<=9) {
@@ -42,6 +55,7 @@ function input() {
     }
 }
 
+// get content & build objects
 function scrape(content) { 
     
     var $ = cheerio.load(content);
@@ -114,6 +128,7 @@ function scrape(content) {
 
 // run input, which calls the scraper.
 input();
+rmDups(meetings);
 // console.log(meetings);  
 
 async.eachSeries(meetings, function(item, callback) {
@@ -125,7 +140,7 @@ async.eachSeries(meetings, function(item, callback) {
         // write the lat and lng to key / value pairs on meetings object
         item.lat = JSON.parse(body).results[0].geometry.location.lat;
         item.lng = JSON.parse(body).results[0].geometry.location.lng; 
-        // console.log(item);
+        console.log(item);
     });
     setTimeout(callback, 250);
     

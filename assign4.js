@@ -18,8 +18,13 @@ var addresses = JSON.parse(fs.readFileSync('addresses.txt'));
         // THIS IS WHERE THE DOCUMENT(S) IS/ARE INSERTED TO MONGO:
         for (var i=0; i < addresses.length; i++) {
             collection.insert({
+                type: addresses[i].type,
+                day: addresses[i].day,
+                start: addresses[i].start,
+                end: addresses[i].end,
                 address: addresses[i].address,
-                latLong: addresses[i].latLong
+                lat: addresses[i].lat,
+                lng: addresses[i].lng
             });
         }
         console.log("logging collection");
