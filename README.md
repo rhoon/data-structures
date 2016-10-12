@@ -1,21 +1,21 @@
 # data-structures
 ###MSDV Data Structures Assignments
 
-#Assignment 1
+###Assignment 1
 Grabs and saves HTML Files
 
 see -> app.js
 
 ___
 
-#Assignment 2
+###Assignment 2
 Uses Cheerio/Jquery selectors to sort through 
 
 see -> scraper.js
 
 ___
 
-#Assignment 3
+###Assignment 3
 Update of Scraper.js, uses Google Maps API to locate addresses and writes a txt file with the lat / long JSON objects
 
 see -> scraper.js
@@ -23,7 +23,7 @@ see -> scraper.js
     
 ___
 
-#Assignment 4
+###Assignment 4
 Adds the lat / long data and addresses to a MongoDB collection
 
 ***> db.bymeet.find().count() <br />
@@ -33,7 +33,7 @@ see -> assign4.js
 
 ___
 
-#Assignment 5
+###Assignment 5
 Updated 10/10/2016
 
 ```
@@ -70,7 +70,7 @@ see -> scraper.js, assign5.js
 
 ___
 
-#Assignment 6
+###Assignment 6
 Enhanced scraper now adds meeting titles with improved formatting
 
 see -> scraper.js
