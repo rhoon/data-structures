@@ -1,6 +1,12 @@
-###Data Read from IR Sensor (TV Remote)
+###Visual Design
 
 ![](assignment7.jpg)
+
+###Sensor Mount Sketch
+
+![](bike-sketch.png)
+
+###Data Read from IR Sensor (TV Remote)
 
 Ready to decode IR!
 
