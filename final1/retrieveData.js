@@ -5,10 +5,11 @@ var url = 'mongodb://' + process.env.IP + ':27017/aa-meetings';
 var MongoClient = require('mongodb').MongoClient; // npm install mongodb
 
 var meetings = [];
+var hello = 'Hello World';
 
-var server = http.createServer(function(request, response) {
+//connect to server
+var server = http.createServer(function(req, res) {
 
-    // MongoClient.connect
     MongoClient.connect(url, function(err, db) {
         if (err) { return console.dir(err); }
         
@@ -20,25 +21,31 @@ var server = http.createServer(function(request, response) {
             { $match : { day : "Tuesdays" } },
             
         ]).toArray(function(err, docs) {
-        if (err) {console.log(err);}
-        else {
+            if (err) {console.log(err);}
+            else {
+                
+                for (var i=0; i < docs.length; i++) {
+                    meetings.push(docs[i])
+                    // console.log(JSON.stringify(docs[i], null, 4));
+                    // console.log('');
+                    
+                }
+                
+                res.writeHead(200, {"Content-Type": "text/html"});
+                res.end(JSON.stringify(meetings));
             
-            for (var i=0; i < docs.length; i++) {
-                meetings.push(docs[i])
-                // console.log(JSON.stringify(docs[i], null, 4));
-                // console.log('');
-            }
-            
-        }
-        db.close();
-        });
+            } // end else
         
-        response.writeHead(200, {"Content-Type": "text/html"});
-        response.end("Hello, world!");
+        //close db
+        db.close();
+        
+        }); // end toArray
+        
+        console.log(meetings);
     
     });
     
-    fs.writeFileSync('aa_data.json', JSON.stringify(meetings));
+    // fs.writeFileSync('aa_data.json', JSON.stringify(meetings));
     
 });
 
