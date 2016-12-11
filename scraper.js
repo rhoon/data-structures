@@ -13,6 +13,35 @@ var nyc = ", New York, NY";
 
 var meetings = [];
 
+function weekdaysToNum(weekday) {
+    
+    var num;
+    switch (weekday) {
+        case "Sundays":
+            num = 0;
+            break;
+        case "Mondays":
+            num = 1;
+            break;
+        case "Tuesdays":
+            num = 2;
+            break;
+        case "Wednesdays":
+            num = 3;
+            break;
+        case "Thursdays":
+            num = 4;
+            break;
+        case "Fridays":
+            num = 5;
+            break;
+        case "Saturdays":
+            num = 6;
+    }
+    return num;
+    
+}
+
 // takes string formatted in 12:00 AM / PM and makes it into a miltary time
 function militaryTime(time) {
     
@@ -111,6 +140,13 @@ function scrape(content) {
             .trim()
             .concat(nyc)); //.replace(/ /g, '+'));
         
+        //for some reason google doesn't like these addresses
+        if (meeting.address.indexOf('Hudson Street,')!=-1) {
+            meeting.address = '487 Hudson, New York, NY';
+        } else if (meeting.address.indexOf('127 East 22nd Street')!=-1) {
+            meeting.address = '127 E 22nd St, New York, NY 10010';
+        }
+        
         //parse second td for multiple meetings
         var meets = $(elem).find('td').eq(1)
             .html()
@@ -127,7 +163,8 @@ function scrape(content) {
             //assign day and time
             if (meets[i] != undefined) {
                 meeting.day = meets[i].split('From')[0].replace(/(<([^>]+)>)/ig,'').trim();
-                // console.log('day: ' + meeting.day);
+                meeting.day = weekdaysToNum(meeting.day);
+                // console.log(meeting.day);
                 var time = meets[i].split('From')[1];
                 if (time != undefined) {
                     meeting.start = militaryTime(time.split('to')[0].replace(/(<([^>]+)>)/ig,'').trim());
@@ -164,16 +201,20 @@ rmDups(meetings);
 
 async.eachSeries(meetings, function(item, callback) {
     
-    var apiRequest = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + item.address.split(' ').join('+') + '&key=' + apiKey;
+    var apiRequest = 'https://maps.googleapis.com/maps/api/place/textsearch/json?query=' + item.address.split(' ').join('+') + '&key=' + apiKey;
+
+    // https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=YOUR_API_KEY
 
     request(apiRequest, function(err, resp, body) {  
         if (err) {throw err;} 
+        console.log(item);
+        console.log(apiRequest);
         // write the lat and lng to key / value pairs on meetings object
         item.lat = JSON.parse(body).results[0].geometry.location.lat;
-        item.lng = JSON.parse(body).results[0].geometry.location.lng; 
+        item.lng = JSON.parse(body).results[0].geometry.location.lng;
         console.log(item);
     });
-    setTimeout(callback, 250);
+    setTimeout(callback, 500);
     
 }, function() {
     console.log(meetings);
