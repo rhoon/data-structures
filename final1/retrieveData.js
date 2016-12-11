@@ -2,49 +2,22 @@ var http = require('http');
 var fs = require('fs');
 var hb = require('handlebars');
 
-var url = 'mongodb://' + process.env.IP + ':27017/aa-meetings';
+var url = 'mongodb://' + process.env.IP + ':27017/aameetings';
 var MongoClient = require('mongodb').MongoClient; // npm install mongodb
 
 var meetings = [];
 var hello = 'Hello World';
 
-var today = new Date();
-var day = today.getDay(); //returns 0 (sunday) - 6 (saturday)
-var hourRangeStart = today.getHours(); //returns 0-23 UTC (5hrs ahead of NYC)
+var rn = new Date();
+var today = rn.getDay(); //returns 0 (sunday) - 6 (saturday)
+var hourRangeStart = rn.getHours(); //returns 0-23 UTC (5hrs ahead of NYC)
 
 // var hourRangeEnd = hourRangeStart
 
-console.log(day, hourRangeStart);
-console.log(numToWeekday(day));
+// console.log(day, hourRangeStart);
 
 //http://www.w3schools.com/js/js_switch.asp
-// function numToWeekday(num) {
-    
-//     var day;
-//     switch (num) {
-//         case 0:
-//             day = "Sunday";
-//             break;
-//         case 1:
-//             day = "Monday";
-//             break;
-//         case 2:
-//             day = "Tuesday";
-//             break;
-//         case 3:
-//             day = "Wednesday";
-//             break;
-//         case 4:
-//             day = "Thursday";
-//             break;
-//         case 5:
-//             day = "Friday";
-//             break;
-//         case 6:
-//             day = "Saturday";
-//     }
-//     return day;
-// }
+//for reverse version of below
 
 function weekdaysToNum(weekday) {
     
@@ -78,9 +51,9 @@ function weekdaysToNum(weekday) {
 function tohtml(str, h1) {
     
     if (h1) {
-       return "<h1>"+str+"</h1>"; 
+      return "<h1>"+str+"</h1>"; 
     } else {
-        return "<p>"+str+"</p>";
+      return "<p>"+str+"</p>";
     }
     
 }
@@ -91,7 +64,7 @@ function showDates(ms) {
     for (var m in ms) {
         
         var a = tohtml(ms[m].type, true);
-        var b = tohtml(ms[m].day, false);
+        var b = tohtml(weekdaysToNum(ms[m].day), false);
         var c = tohtml(ms[m].start, false);
         html += a+b+c;
         
@@ -108,12 +81,17 @@ var server = http.createServer(function(req, res) {
     MongoClient.connect(url, function(err, db) {
         if (err) { return console.dir(err); }
         
-        var collection = db.collection('assign5');
+        var collection = db.collection('finalV1');
         console.log('connected');
         
         collection.aggregate([ 
             
-            { $match : { day : "Tuesdays" } },
+            // https://docs.mongodb.com/manual/tutorial/query-documents/#read-operations-query-argument
+            // need to $match to after this time today and 4am tomorrow
+            // tester: { $or : [ { day : "Tuesdays", start : { $gt : 1500 } }, { day : "Wednesdays", start : { $lt : 400 } } ] }
+            // 
+            { $match : { $or : [ { day : "Tuesdays", start : { $gt : 1500 } }, { day : "Wednesdays", start : { $lt : 400 } } ] } },
+            { $group : { _id : "$address", details: { $push: "$$ROOT" } } }
             
         ]).toArray(function(err, docs) {
             if (err) {console.log(err);}
@@ -127,7 +105,7 @@ var server = http.createServer(function(req, res) {
                 }
                 
                 res.writeHead(200, {"Content-Type": "text/html"});
-                res.end(showDates(meetings)); //JSON.stringify(meetings)
+                res.end(JSON.stringify(meetings)); // showDates(meetings)
             
             } // end else
         
@@ -136,7 +114,7 @@ var server = http.createServer(function(req, res) {
         
         }); // end toArray
         
-        console.log(meetings);
+        // console.log(JSON.stringify(meetings));
     
     });
     

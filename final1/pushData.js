@@ -13,11 +13,12 @@ var addresses = JSON.parse(fs.readFileSync('addresses.txt'));
         if (err) {return console.dir(err);}
         
         // use collection 'assign5'
-        var collection = db.collection('assign5');
+        var collection = db.collection('finalV1');
 
         // THIS IS WHERE THE DOCUMENT(S) IS/ARE INSERTED TO MONGO:
         for (var i=0; i < addresses.length; i++) {
             collection.insert({
+                name: addresses[i].name,
                 type: addresses[i].type,
                 day: addresses[i].day,
                 start: addresses[i].start,
