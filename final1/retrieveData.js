@@ -63,9 +63,10 @@ function showDates(ms) {
     var html;
     for (var m in ms) {
         
-        var a = tohtml(ms[m].type, true);
-        var b = tohtml(weekdaysToNum(ms[m].day), false);
-        var c = tohtml(ms[m].start, false);
+        console.log(ms[m]);
+        var a = tohtml(ms[m].details[0].name, true);
+        var b = tohtml(weekdaysToNum(ms[m].details[0].day), false);
+        var c = tohtml(ms[m].details[0].start, false);
         html += a+b+c;
         
     }
@@ -91,7 +92,8 @@ var server = http.createServer(function(req, res) {
             // tester: { $or : [ { day : "Tuesdays", start : { $gt : 1500 } }, { day : "Wednesdays", start : { $lt : 400 } } ] }
             // 
             { $match : { $or : [ { day : "Tuesdays", start : { $gt : 1500 } }, { day : "Wednesdays", start : { $lt : 400 } } ] } },
-            { $group : { _id : "$address", details: { $push: "$$ROOT" } } }
+            { $group : { _id : "$address", details: { $push: "$$ROOT" } } },
+            // { $sort : { start : 1 } }
             
         ]).toArray(function(err, docs) {
             if (err) {console.log(err);}
@@ -105,7 +107,7 @@ var server = http.createServer(function(req, res) {
                 }
                 
                 res.writeHead(200, {"Content-Type": "text/html"});
-                res.end(JSON.stringify(meetings)); // showDates(meetings)
+                res.end(showDates(meetings)); // showDates(meetings) JSON.stringify(meetings)
             
             } // end else
         

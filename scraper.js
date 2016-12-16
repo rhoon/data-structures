@@ -45,16 +45,18 @@ function weekdaysToNum(weekday) {
 // takes string formatted in 12:00 AM / PM and makes it into a miltary time
 function militaryTime(time) {
     
+    console.log(time);
+    
     var hours = time.split(' ')[0].split(':')[0];
     hours = +hours;
     var minutes = time.split(' ')[0].split(':')[1];
     var PM = time.split(' ')[1].toUpperCase();
-    if (PM == 'PM') {
+    if (PM == 'PM' && hours != 12) {
         hours = hours+12;
-    } else if (hours == 12) { 
+    } else if (hours == 12 && PM != 'PM') { 
         hours = 0; 
     }
-    
+    console.log(hours+minutes);
     return parseInt(hours + minutes);
     
 }
@@ -201,20 +203,22 @@ rmDups(meetings);
 
 async.eachSeries(meetings, function(item, callback) {
     
-    var apiRequest = 'https://maps.googleapis.com/maps/api/place/textsearch/json?query=' + item.address.split(' ').join('+') + '&key=' + apiKey;
+    // no api requests until scraper is fixed
+    
+    // var apiRequest = 'https://maps.googleapis.com/maps/api/place/textsearch/json?query=' + item.address.split(' ').join('+') + '&key=' + apiKey;
 
-    // https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=YOUR_API_KEY
+    // // https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=YOUR_API_KEY
 
-    request(apiRequest, function(err, resp, body) {  
-        if (err) {throw err;} 
-        console.log(item);
-        console.log(apiRequest);
-        // write the lat and lng to key / value pairs on meetings object
-        item.lat = JSON.parse(body).results[0].geometry.location.lat;
-        item.lng = JSON.parse(body).results[0].geometry.location.lng;
-        console.log(item);
-    });
-    setTimeout(callback, 500);
+    // request(apiRequest, function(err, resp, body) {  
+    //     if (err) {throw err;} 
+    //     console.log(item);
+    //     console.log(apiRequest);
+    //     // write the lat and lng to key / value pairs on meetings object
+    //     item.lat = JSON.parse(body).results[0].geometry.location.lat;
+    //     item.lng = JSON.parse(body).results[0].geometry.location.lng;
+    //     console.log(item);
+    // });
+    // setTimeout(callback, 500);
     
 }, function() {
     console.log(meetings);
