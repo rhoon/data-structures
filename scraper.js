@@ -56,7 +56,7 @@ function militaryTime(time) {
     } else if (hours == 12 && PM != 'PM') { 
         hours = 0; 
     }
-    console.log(hours+minutes);
+    // console.log(hours+minutes);
     return parseInt(hours + minutes);
     
 }
@@ -201,24 +201,34 @@ input();
 rmDups(meetings);
 // console.log(meetings);  
 
+var errCount = 0;
+
 async.eachSeries(meetings, function(item, callback) {
     
-    // no api requests until scraper is fixed
-    
-    // var apiRequest = 'https://maps.googleapis.com/maps/api/place/textsearch/json?query=' + item.address.split(' ').join('+') + '&key=' + apiKey;
-
+    var apiRequest = 'https://maps.googleapis.com/maps/api/place/textsearch/json?query=' + item.address.split(' ').join('+') + '&key=' + apiKey;
     // // https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=YOUR_API_KEY
+    
+        request(apiRequest, function(err, resp, body) {  
+            if (err) {throw err;} 
+            
+            var jsonbod = JSON.parse(body).results[0];
+            // solving for strange api error where jsonbod returns as undefined despite searchable address
+            if (jsonbod!=undefined) {
+                // write the lat and lng to key / value pairs on meetings object
+                item.lat = jsonbod.geometry.location.lat;
+                item.lng = jsonbod.geometry.location.lng;
+            } else {
+                errCount++;
+                console.log('UNDEFINED');
+                console.log(apiRequest);
+                console.log(errCount);
+            }
+            
+            // console.log(item);
+        });
 
-    // request(apiRequest, function(err, resp, body) {  
-    //     if (err) {throw err;} 
-    //     console.log(item);
-    //     console.log(apiRequest);
-    //     // write the lat and lng to key / value pairs on meetings object
-    //     item.lat = JSON.parse(body).results[0].geometry.location.lat;
-    //     item.lng = JSON.parse(body).results[0].geometry.location.lng;
-    //     console.log(item);
-    // });
-    // setTimeout(callback, 500);
+    setTimeout(callback, 2000);
+
     
 }, function() {
     console.log(meetings);
