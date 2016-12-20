@@ -2,11 +2,11 @@
 
 ###Visual Design
 
-![](mockup.jpg)
+![](mockup.png)
 
 ###Sensor Mount
 
-![](bike-sketch.png)
+![](bike-sketch.jpg)
 ![](bike.jpg)
 
 ###Query Sensor Data:
