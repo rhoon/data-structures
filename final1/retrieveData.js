@@ -56,7 +56,7 @@ var server = http.createServer(function(req, res) {
     MongoClient.connect(url, function(err, db) {
         if (err) { return console.dir(err); }
         
-        var collection = db.collection('finalV4');
+        var collection = db.collection('finalV10');
         console.log('connected');
         
         collection.aggregate([ 
@@ -66,9 +66,33 @@ var server = http.createServer(function(req, res) {
             // { $match : { day : wdi } } // basic query 
             
             { $match : { $or : [ { day : wdi, start : { $gt : hr } }, { day : wdi+1, start : { $lt : 400 } } ] } },
-            { $group : { _id : "$address", details: { $push: "$$ROOT" } } }, // $sort : { start : 1 }
             
-            // not working yet { $sort : { start : 1 } }
+            // { $group : { _id : { latLong : "$latLong", address: "$address"}, details: { $push: "$$ROOT" } } }, // $sort : { start : 1 }
+            
+            // group by meeting group
+            { $group : { _id : {
+                latLong : "$latLong",
+                meetingName : "$name",
+                meetingAddress1 : "$address"
+                },
+                    meetingDay : { $push : "$day" },
+                    meetingStartTime : { $push : "$start" }, 
+                    meetingType : { $push : "$type" }
+                } // _id
+            }, // $group
+            
+            // group meeting groups by latLong
+            {
+                $group : { _id : { 
+                    latLong : "$_id.latLong"},
+                    meetingGroups : { $push : { 
+                        groupInfo : "$_id", 
+                        meetingDay : "$meetingDay", 
+                        meetingStartTime : "$meetingStartTime", 
+                        meetingType : "$meetingType" 
+                    }}
+                }
+            }
             
         ]).toArray(function(err, docs) {
             if (err) {console.log(err);}
@@ -79,8 +103,10 @@ var server = http.createServer(function(req, res) {
                     // console.log(JSON.stringify(docs[i], null, 4));
                 }
                 
-                res.writeHead(200, {"Content-Type": "text/html"});
-                res.end(JSON.stringify(meetings)); // JSON.stringify(meetings)
+                res.writeHead(200, { "Content-Type" : "text/html" });
+                res.write(index1);
+                res.write(JSON.stringify(meetings)); // JSON.stringify(meetings)
+                res.end(index3);
             
             } // end else
         

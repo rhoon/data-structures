@@ -35,6 +35,25 @@ function tFix(startTime, endTime) {
     
 }
 
+function meetingType(mt) {
+        
+        var types=["Big Book", "Beginners", "Closed Discussion", "Step", "Tradition", "Open Meeting", "Open Discussion"]
+        var abbr=["BB", "B", "C", "S", "T", "O", "OD"]
+        var alt ="";
+        
+        if (mt==undefined) {mt='';}
+        
+        for (var i in types) {
+            if (mt.includes(types[i])) {
+                mt=abbr[i];
+                break;
+            }
+        }
+        
+        return mt;
+    
+}
+
     // Connection URL, use db aa-meetings
     var url = 'mongodb://' + process.env.IP + ':27017/aameetings';
 
@@ -46,23 +65,23 @@ function tFix(startTime, endTime) {
         if (err) {return console.dir(err);}
         
         // use collection 'assign5'
-        var collection = db.collection('finalV4');
+        // var collection = db.collection('finalV10');
 
         // THIS IS WHERE THE DOCUMENT(S) IS/ARE INSERTED TO MONGO:
         for (var i=0; i < addresses.length; i++) {
             
             collection.insert({
                 name: addresses[i].name,
-                type: addresses[i].type,
+                type: meetingType(addresses[i].type),
                 day: weekdaysToNum(addresses[i].day),
                 start: tFix(addresses[i].start, addresses[i].end)[0],
                 end: tFix(addresses[i].start, addresses[i].end)[1],
                 address: addresses[i].address,
-                lat: addresses[i].lat,
-                lng: addresses[i].lng
+                latLong: [addresses[i].lat, addresses[i].lng]
             });
             
         }
+        
         console.log("logging collection");
         console.log(collection);
         
