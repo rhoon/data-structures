@@ -6,7 +6,7 @@
 
 ###Sensor Mount
 
-![](bike-sketch.jpg)
+![](bike-sketch.JPG)
 ![](bike.jpg)
 
 ###Query Sensor Data:
