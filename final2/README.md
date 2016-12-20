@@ -56,3 +56,14 @@
 {"datecreated":"2016-11-07T18:45:04.332Z","speed":0.904164},
 {"startTime":"Nov 07 2016 6:43pm","duration":"01:54","avgSpd":"2.40","maxSpd":"3.64"}]
 ```
+
+Why the small amount of low speeds? Unfortunately, the sensor had difficulty capturing speeds above 3.64mph, and would return very high speeds (upwards of 100mph) in error.
+
+The postgres query only returns the 'true' speeds, so only a small number of very low speeds show.
+
+###With infite resources and time, I would make:
+
+- A better sensor. Or, an existing sensor (there are many)
+- An id created at the beginning for seperate r`ides.
+- Input for additional, mobile sensors (GPS, HR, etc)
+- More meta analysis (ability to see progress over time)

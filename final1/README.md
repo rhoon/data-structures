@@ -27,6 +27,7 @@ retrieveData serves time-relevant data, attached to slightly modified (for time 
 index1.txt and index3.txt files, displaying it on a google map.
 
 ```
+
 // Query returns objects like this one:
 
 { _id : 
@@ -41,4 +42,5 @@ index1.txt and index3.txt files, displaying it on a google map.
 		} ]
 	}
 ...
+
 ```
