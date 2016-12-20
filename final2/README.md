@@ -1,3 +1,14 @@
+##Data Structures Final Assignment 2
+
+###Visual Design
+
+![](mockup.jpg)
+
+###Sensor Mount
+
+![](bike-sketch.png)
+![](bike.jpg)
+
 ###Query Sensor Data:
 
 ```
