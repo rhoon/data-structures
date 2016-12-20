@@ -202,6 +202,7 @@ rmDups(meetings);
 // console.log(meetings);  
 
 var errCount = 0;
+var successCount = 0;
 
 async.eachSeries(meetings, function(item, callback) {
     
@@ -212,19 +213,24 @@ async.eachSeries(meetings, function(item, callback) {
             if (err) {throw err;} 
             
             var jsonbod = JSON.parse(body).results[0];
-            // solving for strange api error where jsonbod returns as undefined despite searchable address
+
             if (jsonbod!=undefined) {
                 // write the lat and lng to key / value pairs on meetings object
                 item.lat = jsonbod.geometry.location.lat;
                 item.lng = jsonbod.geometry.location.lng;
+                
+                console.log('SUCCESS COUNT: '+ successCount);
+                successCount++;
+                
             } else {
+                // return error on undefined bod rather than breaking
                 errCount++;
                 console.log('UNDEFINED');
                 console.log(apiRequest);
-                console.log(errCount);
+                console.log('ERROR COUNT: '+ errCount);
+                console.log('SUCCESS COUNT: '+ successCount);
             }
             
-            // console.log(item);
         });
 
     setTimeout(callback, 2000);

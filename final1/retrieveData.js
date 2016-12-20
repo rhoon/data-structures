@@ -7,7 +7,10 @@ var MongoClient = require('mongodb').MongoClient; // npm install mongodb
 
 var meetings = [];
 
-// Time Formatting
+var index1 = fs.readFileSync("index1.txt");
+var index3 = fs.readFileSync("index3.txt");
+
+// Time formatting for today
 var weekdays = ['Sundays', 'Mondays', 'Tuesdays', 'Wednesdays', 'Thursdays', 'Fridays', 'Saturdays'];
 
 var rn      = new Date();
@@ -27,16 +30,24 @@ function tohtml(str, h1) {
     }
 }
 
-function showDates(ms) {
-    var html;
-    for (var m in ms) {
-        console.log(ms[m]);
-        var a = tohtml(ms[m].details[0].name, true);
-        // var b = tohtml(weekdaysToNum(ms[m].details[0].day), false);
-        var c = tohtml(ms[m].details[0].start, false);
-        html += a+c;
+//re-format/fix times for UI
+function timeOut(t) {
+    
+    var ampm = 'am';
+    var hrOut = Math.floor(t/100)*100;
+    var minOut = t - hrOut;
+    if (minOut == 0) {
+        minOut = '00';
     }
-    return html;
+    hrOut = hrOut/100;
+    
+    if (hrOut > 12) {
+        hrOut = hrOut - 12;
+        ampm = 'pm';
+    }
+    
+    return hrOut+':'+minOut+' '+ampm;
+    
 }
 
 //connect to server
@@ -45,17 +56,17 @@ var server = http.createServer(function(req, res) {
     MongoClient.connect(url, function(err, db) {
         if (err) { return console.dir(err); }
         
-        var collection = db.collection('finalV2');
+        var collection = db.collection('finalV4');
         console.log('connected');
         
         collection.aggregate([ 
             
             // https://docs.mongodb.com/manual/tutorial/query-documents/#read-operations-query-argument
             // need to $match to after this time today and 4am tomorrow
-            { $match : { start : hr } },
+            // { $match : { day : wdi } } // basic query 
             
-            // { $match : { $or : [ { day : weekday, start : { $gt : hr } }, { day : weekdays[wdi+1], start : { $lt : 400 } } ] } },
-            // { $group : { _id : "$address", details: { $push: "$$ROOT" } } },
+            { $match : { $or : [ { day : wdi, start : { $gt : hr } }, { day : wdi+1, start : { $lt : 400 } } ] } },
+            { $group : { _id : "$address", details: { $push: "$$ROOT" } } }, // $sort : { start : 1 }
             
             // not working yet { $sort : { start : 1 } }
             
@@ -69,7 +80,7 @@ var server = http.createServer(function(req, res) {
                 }
                 
                 res.writeHead(200, {"Content-Type": "text/html"});
-                res.end(JSON.stringify(meetings)); // showDates(meetings) JSON.stringify(meetings)
+                res.end(JSON.stringify(meetings)); // JSON.stringify(meetings)
             
             } // end else
         
