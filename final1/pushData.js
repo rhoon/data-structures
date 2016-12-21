@@ -1,6 +1,6 @@
 var fs = require('fs');
 
-var addresses = JSON.parse(fs.readFileSync('addresses.txt'));
+var addresses = JSON.parse(fs.readFileSync('addresses-recurse.txt'));
 
 var weekdays = ['Sundays', 'Mondays', 'Tuesdays', 'Wednesdays', 'Thursdays', 'Fridays', 'Saturdays'];
 
@@ -64,8 +64,8 @@ function meetingType(mt) {
         
         if (err) {return console.dir(err);}
         
-        // use collection 'assign5'
-        // var collection = db.collection('finalV10');
+        // avoid dup data in collections
+        // var collection = db.collection('finalV12');
 
         // THIS IS WHERE THE DOCUMENT(S) IS/ARE INSERTED TO MONGO:
         for (var i=0; i < addresses.length; i++) {
@@ -73,11 +73,14 @@ function meetingType(mt) {
             collection.insert({
                 name: addresses[i].name,
                 type: meetingType(addresses[i].type),
-                day: weekdaysToNum(addresses[i].day),
+                day: addresses[i].day,
                 start: tFix(addresses[i].start, addresses[i].end)[0],
                 end: tFix(addresses[i].start, addresses[i].end)[1],
                 address: addresses[i].address,
-                latLong: [addresses[i].lat, addresses[i].lng]
+                latLong: [addresses[i].lat, addresses[i].lng],
+                //added Dec 21
+                meetingDetails: [addresses[i].details],
+                meetingWheelchair: [addresses[i].wheelchair]
             });
             
         }

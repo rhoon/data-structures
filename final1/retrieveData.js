@@ -17,6 +17,9 @@ var rn      = new Date();
 var wdi     = rn.getDay();
 var weekday = weekdays[wdi];
 var hr      = rn.getHours()-5;
+var wdiNext = wdi+1;
+
+if (wdiNext == 7) { wdi = 0 };
 
 if (hr < 0) { hr = hr+24 };
 hr = hr*100;
@@ -56,7 +59,7 @@ var server = http.createServer(function(req, res) {
     MongoClient.connect(url, function(err, db) {
         if (err) { return console.dir(err); }
         
-        var collection = db.collection('finalV10');
+        var collection = db.collection('finalV11');
         console.log('connected');
         
         collection.aggregate([ 
@@ -65,21 +68,25 @@ var server = http.createServer(function(req, res) {
             // need to $match to after this time today and 4am tomorrow
             // { $match : { day : wdi } } // basic query 
             
-            { $match : { $or : [ { day : wdi, start : { $gt : hr } }, { day : wdi+1, start : { $lt : 400 } } ] } },
+            { $match : { $or : [ { day : wdi, start : { $gt : hr } }, { day : wdiNext, start : { $lt : 400 } } ] } },
             
             // { $group : { _id : { latLong : "$latLong", address: "$address"}, details: { $push: "$$ROOT" } } }, // $sort : { start : 1 }
+            
             
             // group by meeting group
             { $group : { _id : {
                 latLong : "$latLong",
                 meetingName : "$name",
-                meetingAddress1 : "$address"
+                meetingAddress1 : "$address",
+                meetingDetails : "$meetingDetails",
+                meetingWheelchair : "$meetingWheelchair",
                 },
                     meetingDay : { $push : "$day" },
                     meetingStartTime : { $push : "$start" }, 
                     meetingType : { $push : "$type" }
                 } // _id
             }, // $group
+            
             
             // group meeting groups by latLong
             {
