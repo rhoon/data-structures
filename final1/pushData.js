@@ -1,6 +1,6 @@
 var fs = require('fs');
 
-var addresses = JSON.parse(fs.readFileSync('addresses-recurse.txt'));
+var addresses = JSON.parse(fs.readFileSync('addresses-asyncMeets.txt'));
 
 var weekdays = ['Sundays', 'Mondays', 'Tuesdays', 'Wednesdays', 'Thursdays', 'Fridays', 'Saturdays'];
 
@@ -65,7 +65,7 @@ function meetingType(mt) {
         if (err) {return console.dir(err);}
         
         // avoid dup data in collections
-        // var collection = db.collection('finalV12');
+        var collection = db.collection('asyncMeets');
 
         // THIS IS WHERE THE DOCUMENT(S) IS/ARE INSERTED TO MONGO:
         for (var i=0; i < addresses.length; i++) {

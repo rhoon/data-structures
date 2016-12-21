@@ -59,7 +59,7 @@ var server = http.createServer(function(req, res) {
     MongoClient.connect(url, function(err, db) {
         if (err) { return console.dir(err); }
         
-        var collection = db.collection('finalV11');
+        var collection = db.collection('finalV10');
         console.log('connected');
         
         collection.aggregate([ 
@@ -78,8 +78,8 @@ var server = http.createServer(function(req, res) {
                 latLong : "$latLong",
                 meetingName : "$name",
                 meetingAddress1 : "$address",
-                meetingDetails : "$meetingDetails",
-                meetingWheelchair : "$meetingWheelchair",
+                // meetingDetails : "$meetingDetails",
+                // meetingWheelchair : "$meetingWheelchair",
                 },
                     meetingDay : { $push : "$day" },
                     meetingStartTime : { $push : "$start" }, 
